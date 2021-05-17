@@ -2,10 +2,17 @@ import os
 import time
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 
 MAX_WAIT = 5
+
+
+def start_browser():
+    options = Options()
+    options.add_argument('--headless')
+    return webdriver.Chrome('bin/chromedriver', chrome_options=options)
 
 
 class NewVisitorTest(StaticLiveServerTestCase):
@@ -24,7 +31,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
             time.sleep(0.5)
 
     def setUp(self):
-        self.browser = webdriver.Chrome('bin/chromedriver')
+        self.browser = start_browser()
         staging_server = os.environ.get('STAGING_SERVER')
         if staging_server:
             self.live_server_url = 'http://' + staging_server
@@ -86,7 +93,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertRegex(edith_list_url, '/lists/.+')
 
         self.browser.quit()
-        self.browser = webdriver.Chrome('bin/chromedriver')
+        self.browser = start_browser()
 
         self.browser.get(self.live_server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
