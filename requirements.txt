@@ -1,2 +1,3 @@
 selenium==3.141.0
-Django~=3.2.2
+Django~=3.2.2gunicorn==20.0.4
+gunicorn==20.1.0
