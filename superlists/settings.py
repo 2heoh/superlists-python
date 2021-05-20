@@ -126,3 +126,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+if 'DJANGO_DEBUG_FALSE' in os.environ:      
+    DEBUG = False    
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']      
+    ALLOWED_HOSTS = [os.environ['SITENAME']]  
+else:    
+    DEBUG = True      
+    SECRET_KEY = 'insecure-key-for-dev'    
+    ALLOWED_HOSTS = []
