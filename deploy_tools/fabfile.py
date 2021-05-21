@@ -55,5 +55,5 @@ def _enable_nginx_site():
 
 def _enable_service():
     run(f"sudo cp /home/{env.user}/sites/{env.host}/deploy_tools/gunicorn-template.service /etc/systemd/system/gunicorn-{env.host}.service")
-    run(f"sudo sed -i 's/USER/{env.user}/g' /etc/nginx/sites-available/{env.host}")
-    run(f"sudo sed -i 's/DOMAIN/{env.host}/g' /etc/nginx/sites-available/{env.host}")
+    run(f"sudo sed -i 's/USER/{env.user}/g' /etc/systemd/system/gunicorn-{env.host}.service")
+    run(f"sudo sed -i 's/DOMAIN/{env.host}/g' /etc/systemd/system/gunicorn-{env.host}.service")
