@@ -2,7 +2,7 @@ import random
 from fabric.contrib.files import append, exists
 from fabric.api import cd, env, local, run
 
-REPO_URL = 'https://github.com/hjwp/book-example.git'
+REPO_URL = 'https://github.com/2heoh/superlists-python.git'
 
 def deploy():
     site_folder = f'/home/{env.user}/sites/{env.host}'  
@@ -13,12 +13,14 @@ def deploy():
         _create_or_update_dotenv()
         _update_static_files()
         _update_database()
+        _enable_nginx_site()
 
 
 def _get_latest_source():
     if exists('.git'):
         run('git fetch')
     else:
+        run('echo {REPO_URL}')
         run('git clone {REPO_URL} .')
         current_commit = local('git log -n 1 --format=%H', capture=True)
         run(f'git reset --hard {current_commit}')
@@ -26,6 +28,7 @@ def _get_latest_source():
 def _update_virtualenv():
     if not exists('virtualenv/bin/pip'):
         run(f'python3.6 -m venv virtualenv')
+    run('pwd')
     run('./virtualenv/bin/pip install -r requirements.txt')
 
 def _create_or_update_dotenv():
@@ -37,9 +40,11 @@ def _create_or_update_dotenv():
         append('.env', f'DJANGO_SECRET_KEY={new_secret}')
 
 def _update_static_files():
-    run('./virtualenv/bin/python manage.py collectstatic --noinput')
+    run('./virtualenv/bin/python3.6 manage.py collectstatic --noinput')
 
 def _update_database():
-    run('./virtualenv/bin/python manage.py migrate --noinput')
+    run('./virtualenv/bin/python3.6 manage.py migrate --noinput')
 
-
+def _enable_nginx_site():
+    run('cat ./deploy_tools/nginx.template.conf | sed "s/DOMAIN/{env.host}/g" | sed "s/USER/{env.user}/g | sudo tee /etc/nginx/sites-available/{env.host}')
+    run('sudo ln -s /etc/nginx/sites-available/{env.host} /etc/nginx/sites-enabled/{env.host}')
