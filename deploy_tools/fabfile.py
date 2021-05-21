@@ -20,10 +20,10 @@ def _get_latest_source():
     if exists('.git'):
         run('git fetch')
     else:
-        run('echo {REPO_URL}')
-        run('git clone {REPO_URL} .')
+        run(f"echo {REPO_URL}")
+        run(f"git clone {REPO_URL} .")
         current_commit = local('git log -n 1 --format=%H', capture=True)
-        run(f'git reset --hard {current_commit}')
+        run(f"git reset --hard {current_commit}")
 
 def _update_virtualenv():
     if not exists('virtualenv/bin/pip'):
@@ -46,5 +46,7 @@ def _update_database():
     run('./virtualenv/bin/python3.6 manage.py migrate --noinput')
 
 def _enable_nginx_site():
-    run('cat ./deploy_tools/nginx.template.conf | sed "s/DOMAIN/{env.host}/g" | sed "s/USER/{env.user}/g | sudo tee /etc/nginx/sites-available/{env.host}')
-    run('sudo ln -s /etc/nginx/sites-available/{env.host} /etc/nginx/sites-enabled/{env.host}')
+    run(f"sudo cp /home/{env.user}/sites/{env.host}/deploy_tools/nginx.template.conf /etc/nginx/sites-available/{env.host}")
+    run(f"sudo sed -e 's/USER/{env.user}/g' /etc/nginx/sites-available/{env.host}")
+    run(f"sudo sed -e 's/DOMAIN/{env.host}/g' /etc/nginx/sites-available/{env.host}")
+    run(f"sudo ln -s /etc/nginx/sites-available/{env.host} /etc/nginx/sites-enabled/{env.host}")
