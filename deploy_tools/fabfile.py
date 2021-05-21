@@ -14,6 +14,7 @@ def deploy():
         _update_static_files()
         _update_database()
         _enable_nginx_site()
+        _enable_service()
 
 
 def _get_latest_source():
@@ -47,6 +48,12 @@ def _update_database():
 
 def _enable_nginx_site():
     run(f"sudo cp /home/{env.user}/sites/{env.host}/deploy_tools/nginx.template.conf /etc/nginx/sites-available/{env.host}")
-    run(f"sudo sed -e 's/USER/{env.user}/g' /etc/nginx/sites-available/{env.host}")
-    run(f"sudo sed -e 's/DOMAIN/{env.host}/g' /etc/nginx/sites-available/{env.host}")
-    run(f"sudo ln -s /etc/nginx/sites-available/{env.host} /etc/nginx/sites-enabled/{env.host}")
+    run(f"sudo sed -i 's/USER/{env.user}/g' /etc/nginx/sites-available/{env.host}")
+    run(f"sudo sed -i 's/DOMAIN/{env.host}/g' /etc/nginx/sites-available/{env.host}")
+    if not exists(f"/etc/nginx/sites-enabled/{env.host}"):
+        run(f"sudo ln -s /etc/nginx/sites-available/{env.host} /etc/nginx/sites-enabled/{env.host}")
+
+def _enable_service():
+    run(f"sudo cp /home/{env.user}/sites/{env.host}/deploy_tools/gunicorn-template.service /etc/systemd/system/gunicorn-{env.host}.service")
+    run(f"sudo sed -i 's/USER/{env.user}/g' /etc/nginx/sites-available/{env.host}")
+    run(f"sudo sed -i 's/DOMAIN/{env.host}/g' /etc/nginx/sites-available/{env.host}")
