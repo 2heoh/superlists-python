@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from lists.models import Item, List
 
@@ -28,3 +29,10 @@ class ListAndItemModelTest(TestCase):
         second_item_from_db = Item.objects.all()[1]
         self.assertEqual(second_item_from_db.text, second_item.text)
         self.assertEqual(second_item_from_db.list, todo_list)
+
+    def test_cannot_save_emtpy_list_items(self):
+        list_ = List.objects.create()
+        item = Item(list=list_, text='')
+        with self.assertRaises(ValidationError):
+            item.save()
+            item.full_clean()

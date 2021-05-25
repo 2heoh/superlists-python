@@ -10,7 +10,7 @@ class NewListTest(TestCase):
         current_list = List.objects.create()
 
         self.client.post(
-            f"/lists/{current_list.id}/add_item",
+            f"/lists/{current_list.id}/",
             data={'item_text': "A new item"}
         )
 
@@ -23,6 +23,9 @@ class NewListTest(TestCase):
         other_list = List.objects.create()
         current_list = List.objects.create()
 
-        response = self.client.post(f"/lists/{current_list.id}/add_item", data={'item_text': "A new item"})
+        response = self.client.post(
+            f"/lists/{current_list.id}/",
+            data={'item_text': "A new item"}
+        )
 
         self.assertRedirects(response, f"/lists/{current_list.id}/")
