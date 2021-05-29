@@ -17,7 +17,7 @@ def view_list(request, list_id):
             item = Item(text=request.POST['item_text'], list=todo_list)
             item.full_clean()
             item.save()
-            return redirect(f'/lists/{todo_list.id}/')
+            return redirect(todo_list)
         except ValidationError:
             error = "You can't have an empty list item"
 
@@ -33,4 +33,5 @@ def new_list(request):
         todo_list.delete()
         error = "You can't have an empty list item"
         return render(request, 'home.html', {"error": error})
-    return redirect(f"/lists/{todo_list.id}/")
+
+    return redirect(todo_list)
