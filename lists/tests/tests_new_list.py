@@ -11,7 +11,7 @@ class NewListTest(TestCase):
 
         self.client.post(
             f"/lists/{current_list.id}/",
-            data={'item_text': "A new item"}
+            data={'text': "A new item"}
         )
 
         self.assertEqual(Item.objects.count(), 1)
@@ -25,7 +25,7 @@ class NewListTest(TestCase):
 
         response = self.client.post(
             f"/lists/{current_list.id}/",
-            data={'item_text': "A new item"}
+            data={'text': "A new item"}
         )
 
         self.assertRedirects(response, f"/lists/{current_list.id}/")
