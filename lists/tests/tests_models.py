@@ -1,5 +1,9 @@
+from unittest import skip
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.utils.html import escape
+
 from lists.models import Item, List
 
 
@@ -16,31 +20,6 @@ class ListModelTest(TestCase):
         item.list = list_
         item.save()
         self.assertIn(item, list_.item_set.all())
-
-    # def test_saving_and_retrieving_items_to_the_database(self):
-    #     todo_list = List()
-    #     todo_list.save()
-    #
-    #     first_item = Item()
-    #     first_item.text = "Item the first"
-    #     first_item.list = todo_list
-    #     first_item.save()
-    #
-    #     second_item = Item()
-    #     second_item.text = "Second item"
-    #     second_item.list = todo_list
-    #     second_item.save()
-    #
-    #     saved_list = List.objects.first()
-    #     self.assertEqual(saved_list, todo_list)
-    #
-    #     first_item_from_db = Item.objects.all()[0]
-    #     self.assertEqual(first_item_from_db.text, first_item.text)
-    #     self.assertEqual(first_item_from_db.list, todo_list)
-    #
-    #     second_item_from_db = Item.objects.all()[1]
-    #     self.assertEqual(second_item_from_db.text, second_item.text)
-    #     self.assertEqual(second_item_from_db.list, todo_list)
 
     def test_cannot_save_emtpy_list_items(self):
         list_ = List.objects.create()
@@ -87,3 +66,5 @@ class ListModelTest(TestCase):
     def test_string_representation(self):
         item = Item(text='some text')
         self.assertEqual(str(item), 'some text')
+
+
