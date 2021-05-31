@@ -12,7 +12,19 @@ class ListViewTest(TestCase):
         response = self.client.get(f'/lists/{todo_list.id}/')
         self.assertTemplateUsed(response, 'list.html')
 
-    def test_displays_items_in_list(self):
+    def test_passes_correct_list_to_template(self):
+        correct_list = List.objects.create()
+        other_list = List.objects.create()
+        response = self.client.get(f"/lists/{correct_list.id}/")
+        self.assertEqual(response.context['list'], correct_list)
+
+    def test_displays_item_form(self):
+        list_ = List.objects.create()
+        response = self.client.get(f'/lists/{list_.id}/')
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
+        self.assertContains(response, 'name="text"')
+
+    def test_displays_only_items_for_that_list(self):
         todo_list = List.objects.create()
         Item.objects.create(text="Item 1", list=todo_list)
         Item.objects.create(text="Item 2", list=todo_list)
@@ -25,12 +37,6 @@ class ListViewTest(TestCase):
         self.assertContains(response, 'Item 1')
         self.assertContains(response, 'Item 2')
         self.assertNotContains(response, 'Item 3')
-
-    def test_passes_correct_list_to_template(self):
-        correct_list = List.objects.create()
-        other_list = List.objects.create()
-        response = self.client.get(f"/lists/{correct_list.id}/")
-        self.assertEqual(response.context['list'], correct_list)
 
     def test_validation_errors_are_sent_back_to_home_page_template(self):
         response = self.client.post('/lists/new', data={'text': ''})
@@ -61,22 +67,9 @@ class ListViewTest(TestCase):
         response = self.client.get('/')
         self.assertIsInstance(response.context['form'], ItemForm)
 
-    def test_displays_item_form(self):
-        list_ = List.objects.create()
-        response = self.client.get(f'/lists/{list_.id}/')
-        self.assertIsInstance(response.context['form'], ExistingListItemForm)
-        self.assertContains(response, 'name="text"')
-
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.post_invalid_input()
         self.assertIsInstance(response.context['form'], ExistingListItemForm)
-
-    def post_invalid_input(self):
-        list_ = List.objects.create()
-        return self.client.post(
-            f'/lists/{list_.id}/',
-            data={'text': ''}
-        )
 
     def test_for_invalid_input_nothing_saved_to_db(self):
         self.post_invalid_input()
@@ -103,3 +96,10 @@ class ListViewTest(TestCase):
         self.assertContains(response, expected_error)
         self.assertTemplateUsed(response, 'list.html')
         self.assertEqual(Item.objects.all().count(), 1)
+
+    def post_invalid_input(self):
+        list_ = List.objects.create()
+        return self.client.post(
+            f'/lists/{list_.id}/',
+            data={'text': ''}
+        )

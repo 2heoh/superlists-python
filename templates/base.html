@@ -7,6 +7,8 @@
     <title>To-Do lists</title>
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/base.css" rel="stylesheet">
+    <script src="/static/jquery-3.6.0.js"></script>
+    <script src="/static/list.js"></script>
 </head>
 
 <body>
@@ -18,9 +20,9 @@
                 <form method="POST" action="{% block form_action %}{% endblock %}">
                     {{ form.text }}
                     {% csrf_token %}
-                    {%  if form.errors %}
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.text.errors }}</span>
+                    {% if form.errors %}
+                        <div class="form-group has-error alert alert-danger">
+                            <span class="help-block ">{{ form.text.errors }}</span>
                         </div>
                     {% endif %}
                 </form>
@@ -35,5 +37,12 @@
         </div>
     </div>
 </div>
+<script>
+
+    $(document).ready(function () {
+        initialize();
+    });
+
+</script>
 </body>
 </html>
